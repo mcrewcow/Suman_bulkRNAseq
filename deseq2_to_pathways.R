@@ -160,6 +160,12 @@ names(csv3)[names(csv3) == 'NES'] <- "NES_Control_vs_oxLDL_48h"
 names(csv4)[names(csv4) == 'NES'] <- "NES_Control_vs-oxLDL_PMC_24h"
 names(csv5)[names(csv5) == 'NES'] <- "NES_Control_vs_oxLDL_PMC_48h"
 ​
+csv_list <- list(csv1, csv2, csv3, csv4, csv5)
+new_names <- c("NES_Control_vs_PMC", "NES_Control_vs_oxLDL_24h", "NES_Control_vs_oxLDL_48h", "NES_Control_vs-oxLDL_PMC_24h", "NES_Control_vs_oxLDL_PMC_48h")
+
+for (i in 1:length(csv_list)) {
+  names(csv_list[[i]])[names(csv_list[[i]]) == 'NES'] <- new_names[i]
+}
 ​
 df <- Reduce(function(...) merge(..., by='ID', all=TRUE), list(csv1,csv2,csv3,csv4,csv5))
 ​
