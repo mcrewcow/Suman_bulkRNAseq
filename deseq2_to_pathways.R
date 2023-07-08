@@ -2,42 +2,42 @@ if (!("clusterProfiler" %in% installed.packages())) {
   # Install this package if it isn't installed yet
   BiocManager::install("clusterProfiler", update = FALSE)
 }
-​
+
 if (!("msigdbr" %in% installed.packages())) {
   # Install this package if it isn't installed yet
   BiocManager::install("msigdbr", update = FALSE)
 }
-​
+
 if (!("org.Hs.eg.db" %in% installed.packages())) {
   # Install this package if it isn't installed yet
   BiocManager::install("org.Hs.eg.db", update = FALSE)
 }
-​
-​
+
+
 # Attach the library
 library(clusterProfiler)
-​
+
 # Package that contains MSigDB gene sets in tidy format
 library(msigdbr)
-​
+
 # Human annotation package we'll use for gene identifier conversion
 library(org.Hs.eg.db)
-​
+
 # We will need this so we can use the pipe: %>%
 library(magrittr)
-​
-​
-​
+
+
+
 wd <- "~/Documents/summer_research_2023-main/bulkrna/deseq2"
 setwd(wd)
-​
-​
+
+
 folders <- c("Control-vs-PMC",
              "Control-vs-oxLDL-24h",
              "Control-vs-oxLDL-48h",
              "Control-vs-oxLDL-PMC-24h",
              "Control-vs-oxLDL-PMC-48h")
-​
+
 #new column for control and test group average
 for (f in folders){
   csv_file <- read.csv(paste(wd, f, "Differential_expression_analysis_table.csv", sep="/"))
@@ -114,7 +114,7 @@ for (f in folders){
   
   gsea_results <- GSEA(
     geneList = lfc_vector, # Ordered ranked gene list
-    minGSSize = 10, # Minimum gene set size
+    minGSSize = 25, # Minimum gene set size
     maxGSSize = 2000, # Maximum gene set set
     pvalueCutoff = 0.01, # p-value cutoff
     eps = 0, # Boundary for calculating the p value
@@ -133,44 +133,5 @@ for (f in folders){
   write.csv(gsea_result_df,file=paste(wd, f, "GSEA_result.csv", sep="/"), row.names=FALSE)
   
 }
-​
-​
-​
-# Load all results
-​
-csv1 <- read.csv(paste(wd, folders[1], "GSEA_result.csv", sep="/"))[c("ID","NES")]
-csv2 <- read.csv(paste(wd, folders[2], "GSEA_result.csv", sep="/"))[c("ID","NES")]
-csv3 <- read.csv(paste(wd, folders[3], "GSEA_result.csv", sep="/"))[c("ID","NES")]
-csv4 <- read.csv(paste(wd, folders[4], "GSEA_result.csv", sep="/"))[c("ID","NES")]
-csv5 <- read.csv(paste(wd, folders[5], "GSEA_result.csv", sep="/"))[c("ID","NES")]
-​
-# Check their lengths
-​
-nrow(csv1)
-nrow(csv2)
-nrow(csv3)
-nrow(csv4)
-nrow(csv5)
-​
-# Merge into one data frame
-​
-names(csv1)[names(csv1) == 'NES'] <- "NES_Control_vs_PMC"
-names(csv2)[names(csv2) == 'NES'] <- "NES_Control_vs_oxLDL_24h"
-names(csv3)[names(csv3) == 'NES'] <- "NES_Control_vs_oxLDL_48h"
-names(csv4)[names(csv4) == 'NES'] <- "NES_Control_vs-oxLDL_PMC_24h"
-names(csv5)[names(csv5) == 'NES'] <- "NES_Control_vs_oxLDL_PMC_48h"
-​
-csv_list <- list(csv1, csv2, csv3, csv4, csv5)
-new_names <- c("NES_Control_vs_PMC", "NES_Control_vs_oxLDL_24h", "NES_Control_vs_oxLDL_48h", "NES_Control_vs-oxLDL_PMC_24h", "NES_Control_vs_oxLDL_PMC_48h")
 
-for (i in 1:length(csv_list)) {
-  names(csv_list[[i]])[names(csv_list[[i]]) == 'NES'] <- new_names[i]
-}
-​
-df <- Reduce(function(...) merge(..., by='ID', all=TRUE), list(csv1,csv2,csv3,csv4,csv5))
-​
-# Replace NA with 0
-df[is.na(df)] <- 0
-​
-View(df)
-​
+
