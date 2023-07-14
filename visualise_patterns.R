@@ -223,10 +223,8 @@ polygon_plot <- function(conditions, NES_df_consecutif, pathwayList, pattern_nam
   
   
   
-  borderDash <- list(c(0,0),c(20,3),c(20,3),c(0,0),c(3,3),c(3,3))   #
+  borderDash <- list(c(0,0),c(20,3),c(20,3),c(0,0),c(3,3),c(3,3))   #for dotted line 
   
-  
-  g <- 2:7 #conditions
   
   
   spChartJSRadar(avgdf, scaleStartValue = min(avgdf[,2:ncol(avgdf)]), maxScale = max(avgdf[,2:ncol(avgdf)]),
@@ -238,14 +236,14 @@ polygon_plot <- function(conditions, NES_df_consecutif, pathwayList, pattern_nam
 
 
 
-g <- group_names[c(2,3,6)]
+g <- group_names[c(2,3,6)] #select conditions here
 
 pathway_expression(g, "new-images/24vs48", NES_df_consecutif, pathwayList, pattern_names)
 average_expression(g, "new-images/24vs48", NES_df_consecutif, pathwayList, pattern_names)
 polygon_plot(g, NES_df_consecutif, pathwayList, pattern_names)
 
 
-g <- group_names[c(1:6)]
+g <- group_names[c(1:6)] #select conditions here
 
 pathway_expression(g, "new-images/all-groups", NES_df_consecutif, pathwayList, pattern_names)
 average_expression(g, "new-images/all-groups", NES_df_consecutif, pathwayList, pattern_names)
