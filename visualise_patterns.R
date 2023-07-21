@@ -1,10 +1,6 @@
 library("ggsignif")  
 library("stringr")   
 library("ggplot2")
-library("viridisLite")
-library("viridis")
-library("fmsb")
-library("tibble")
 library("dplyr")
 library("spradarchart")
 
@@ -12,7 +8,6 @@ library("spradarchart")
 
 wd <- "~/Documents/summer_research_2023-main/bulkrna"
 setwd(wd)
-
 
 
 
@@ -62,7 +57,7 @@ NES_df_consecutif <- rbind(control,NES_df_consecutif)
 # load pattern pathways 
 pattern_folder <- "pattern_folder"
 # same as .csv file name 
-pattern_names <- c("Oxygen_Metabolism", "Metabolism", "Inflammation", "Mitochondria", "Apoptosis", "Lipid_Metabolism", "Retinol", "Autophagy")
+pattern_names <- c("Oxygen_Metabolism", "Metabolism", "Inflammation", "Mitochondria", "Apoptosis", "Lipid_Metabolism", "Retinol_Metabolism", "Autophagy")
 
 
 for(name in pattern_names) {                              # Head of for-loop
@@ -81,7 +76,7 @@ colors <-  c("Control" = "#AAAAAA", "oxLDL-24h" = "#7090FF","oxLDL-48h" = "#0040
                "PMC" = "#ED7014","oxLDL-PMC-24h" = "#E3242B","oxLDL-PMC-48h" = "#AA2080")
 
 
-row_order <- c("Control", "oxLDL-24h", "oxLDL-48h", "PMC", "oxLDL-PMC-24h", "oxLDL-PMC-48h")
+row_order <- c("Control", "oxLDL-24h", "oxLDL-PMC-24h", "oxLDL-48h", "oxLDL-PMC-48h", "PMC")
 
 
 #create directories in wd given a path
@@ -123,7 +118,7 @@ pathway_expression <- function(conditions, path, NES_df_consecutif, pathwayList,
     pdf(file = paste(".", path, "pathway-expression", paste0(pattern_names[i], ".pdf"), sep="/"), width = 10)
     
     #plot
-    plot <- ggplot(data=x, aes(x=NES, y=reorder(gsub("_", " ", ID), NES), fill=group)) +
+    plot <- ggplot(data=x, aes(x=NES, y=gsub("_", " ", ID), fill=group)) +
       geom_bar(stat="identity", position=position_dodge(), width = 0.5) +
       guides(fill = guide_legend(reverse=TRUE)) +
       scale_fill_manual(values = colors) +
@@ -159,7 +154,7 @@ average_expression <- function(conditions, path, NES_df_consecutif, pathwayList,
     #keep requested conditions
     x <- x[x$group %in% conditions,]
     #reorder by order given in row_order
-    x$group <- factor(x$group, levels = rev(row_order))
+    x$group <- factor(x$group, levels = row_order)
     
     
     
@@ -170,14 +165,14 @@ average_expression <- function(conditions, path, NES_df_consecutif, pathwayList,
     
     
     pdf(file = paste(".", path, "average-expression", paste0(pattern_names[i], ".pdf"), sep="/"), width = 10)
-    plot <- ggplot(data=y, aes(x=average, y=reorder(gsub("_", " ", group), average), fill=group)) +
+    plot <- ggplot(data=y, aes(x=average, y=gsub("_", " ", group), fill=group)) +
       geom_bar(stat="identity", position=position_dodge(), width = 0.5) +
       guides(fill = guide_legend(reverse=TRUE)) +
       scale_fill_manual(values = colors) +
       theme_minimal() +
       scale_x_continuous(limits = c(min(y$average)-0.1, max(y$average)+0.1), 
                          oob = scales::squish) +
-      scale_y_discrete(labels = function(x) str_wrap(x, width = 50)) +
+      scale_y_discrete(labels = function(x) str_wrap(x, width = 50), limits=rev(intersect(row_order, conditions))) +
       xlab("Average NES") +
       ylab("group") +
       ggtitle(pattern_names[i])
@@ -238,14 +233,22 @@ polygon_plot <- function(conditions, NES_df_consecutif, pathwayList, pattern_nam
 
 g <- group_names[c(2,3,6)] #select conditions here
 
-pathway_expression(g, "new-images/24vs48", NES_df_consecutif, pathwayList, pattern_names)
-average_expression(g, "new-images/24vs48", NES_df_consecutif, pathwayList, pattern_names)
+pathway_expression(g, "images/24vs48", NES_df_consecutif, pathwayList, pattern_names)
+average_expression(g, "images/24vs48", NES_df_consecutif, pathwayList, pattern_names)
 polygon_plot(g, NES_df_consecutif, pathwayList, pattern_names)
 
 
-g <- group_names[c(1:6)] #select conditions here
+g <- group_names[c(1:6)] 
 
-pathway_expression(g, "new-images/all-groups", NES_df_consecutif, pathwayList, pattern_names)
-average_expression(g, "new-images/all-groups", NES_df_consecutif, pathwayList, pattern_names)
+pathway_expression(g, "images/all-groups", NES_df_consecutif, pathwayList, pattern_names)
+average_expression(g, "images/all-groups", NES_df_consecutif, pathwayList, pattern_names)
 polygon_plot(g, NES_df_consecutif, pathwayList, pattern_names)
+
+
+
+
+
+
+
+
 
