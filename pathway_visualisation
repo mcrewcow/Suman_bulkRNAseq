@@ -15,12 +15,11 @@ folders <- c("Control-vs-PMC",
 
 # Load all results
 
-csv1 <- read.csv(paste(wd, folders[1], "GSEA_result.csv", sep="/"))[c("ID","NES")]
-csv2 <- read.csv(paste(wd, folders[2], "GSEA_result.csv", sep="/"))[c("ID","NES")]
-csv3 <- read.csv(paste(wd, folders[3], "GSEA_result.csv", sep="/"))[c("ID","NES")]
-csv4 <- read.csv(paste(wd, folders[4], "GSEA_result.csv", sep="/"))[c("ID","NES")]
-csv5 <- read.csv(paste(wd, folders[5], "GSEA_result.csv", sep="/"))[c("ID","NES")]
-
+csv1 <- read.csv(paste(wd, "gsea_res", "Control_vs_PMC.csv", sep="/"))[c("ID","NES","pvalue")]
+csv2 <- read.csv(paste(wd, "gsea_res", "Control_vs_oxLDL24h.csv", sep="/"))[c("ID","NES","pvalue")]
+csv3 <- read.csv(paste(wd, "gsea_res", "Control_vs_oxLDL48h.csv", sep="/"))[c("ID","NES","pvalue")]
+csv4 <- read.csv(paste(wd, "gsea_res", "Control_vs_oxLDL_PMC24h.csv", sep="/"))[c("ID","NES","pvalue")]
+csv5 <- read.csv(paste(wd, "gsea_res", "Control_vs_oxLDL_PMC48h.csv", sep="/"))[c("ID","NES","pvalue")]
 # Check their lengths
 
 nrow(csv1)
