@@ -91,7 +91,6 @@ ggplot(data=x, aes(x=NES, y=ID, fill=group)) +
 
 
 
-
 # radar chart
 
 #import packages
@@ -108,9 +107,15 @@ csv5_2 <- csv5
 #rename columns
 
 csv_list <- list(csv1_2, csv2_2, csv3_2, csv4_2, csv5_2)
-new_names <- c("PMC", "oxLDL_24h", "oxLDL_48h", "oxLDL_PMC_24h", "oxLDL_PMC_48h")
+new_names <- c("PMC_NES", "oxLDL_24h_NES", "oxLDL_48h_NES", "oxLDL_PMC_24h_NES", "oxLDL_PMC_48h_NES")
+new_names1 <- c("PMC_pvalue", "oxLDL_24h_pvalue", "oxLDL_48h_pvalue", "oxLDL_PMC_24h_pvalue", "oxLDL_PMC_48h_pvalue")
+
 for (i in 1:length(csv_list)) {
   names(csv_list[[i]])[names(csv_list[[i]]) == 'NES'] <- new_names[i]
+}
+
+for (i in 1:length(csv_list)) {
+  names(csv_list[[i]])[names(csv_list[[i]]) == 'pvalue'] <- new_names1[i]
 }
 
 
@@ -122,6 +127,10 @@ df2 <- Reduce(function(...) merge(..., by='ID', all=TRUE), csv_list)
 df2[is.na(df2)] <- 0
 #take absolute value
 df2[,2:6] <- abs(df2[,2:6])
+
+write.csv(df2,file=paste("full_gsea_results.csv"), row.names=FALSE)
+
+
 
 #specify id
 ids <- c("GOBP_ANIMAL_ORGAN_MORPHOGENESIS", "GOBP_CELL_JUNCTION_ORGANIZATION", "HP_ABNORMAL_PALATE_MORPHOLOGY", 
