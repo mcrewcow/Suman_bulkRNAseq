@@ -12,14 +12,30 @@ folders <- c("Control-vs-PMC",
              "Control-vs-oxLDL-PMC-24h",
              "Control-vs-oxLDL-PMC-48h")
 
+library(EnhancedVolcano)
+for (f in folders){
+  csv_file <- read.csv(paste(wd, f, "Differential_expression_analysis_table.csv", sep="/"))
+  
+  print(EnhancedVolcano(csv_file,
+                        lab = csv_file$ID,
+                        x = 'log2FoldChange',
+                        y = 'pvalue',
+                        pCutoff = 0.1,
+                        FCcutoff = 1,
+                        title = f))
+  
+}
+
 
 # Load all results
+
 
 csv1 <- read.csv(paste(wd, "gsea_res", "Control_vs_PMC.csv", sep="/"))[c("ID","NES","pvalue")]
 csv2 <- read.csv(paste(wd, "gsea_res", "Control_vs_oxLDL24h.csv", sep="/"))[c("ID","NES","pvalue")]
 csv3 <- read.csv(paste(wd, "gsea_res", "Control_vs_oxLDL48h.csv", sep="/"))[c("ID","NES","pvalue")]
 csv4 <- read.csv(paste(wd, "gsea_res", "Control_vs_oxLDL_PMC24h.csv", sep="/"))[c("ID","NES","pvalue")]
 csv5 <- read.csv(paste(wd, "gsea_res", "Control_vs_oxLDL_PMC48h.csv", sep="/"))[c("ID","NES","pvalue")]
+
 # Check their lengths
 
 nrow(csv1)
@@ -49,8 +65,8 @@ df1 <- rbind(csv1_1,csv2_1,csv3_1,csv4_1,csv5_1)
 df1$NES <- abs(df1$NES)
 
 #add control
-u <- unique(df1$ID)
-control <- data.frame(ID = u, NES = 1, group = "Control")
+u <- unique(df1$ID) 
+control <- data.frame(ID = u, NES = 1, pvalue = 1, group = "Control")
 df1 <- rbind(df1, control)
 
 #specify ID
@@ -60,14 +76,17 @@ ids <- c("GOBP_ANIMAL_ORGAN_MORPHOGENESIS", "GOBP_CELL_JUNCTION_ORGANIZATION", "
 x <- df1[df1$ID %in% ids, ]
 
 
+row_order <- c("Control", "oxLDL-24h", "oxLDL-PMC-24h", "oxLDL-48h", "oxLDL-PMC-48h", "PMC")
+x$group <- factor(x$group, levels = rev(row_order))
+
+
 #plot
 ggplot(data=x, aes(x=NES, y=ID, fill=group)) +
   geom_bar(stat="identity", position=position_dodge(), width = 0.5) +
-  scale_fill_viridis(discrete = TRUE) +
+  scale_fill_viridis(discrete = TRUE, breaks = row_order) +
   theme_minimal() +
   scale_x_continuous(limits = c(0.9, 2.5), 
-                     oob = scales::squish)
-
+                     oob = scales::squish) 
 
 
 
