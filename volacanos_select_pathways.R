@@ -2,14 +2,16 @@ library(msigdbr)
 library(EnhancedVolcano)
 
 
-wd <- "~/Documents/summer_research_2023-main/bulkrna/deseq2"
+wd <- "~/Documents/summer_research_2023-main/bulkrna"
 setwd(wd)
 
 folders <- c("Control-vs-PMC",
              "Control-vs-oxLDL-24h",
              "Control-vs-oxLDL-48h",
              "Control-vs-oxLDL-PMC-24h",
-             "Control-vs-oxLDL-PMC-48h")
+             "Control-vs-oxLDL-PMC-48h",
+             "oxLDL-24h-vs-oxLDL-PMC-24h",
+             "oxLDL-48h-vs-oxLDL-PMC-48h")
 
 
 hs_hallmark_sets <- msigdbr(
@@ -26,20 +28,12 @@ genes <- hs_hallmark_sets[hs_hallmark_sets$gs_name %in% pathways,][c("gs_name", 
 
 
 for (f in folders){
-  csv_file <- read.csv(paste(wd, f, "Differential_expression_analysis_table.csv", sep="/"))
+  csv_file <- read.csv(paste(wd, "deseq2", f, "Differential_expression_analysis_table.csv", sep="/"))
+
+  csv_file <- csv_file[csv_file$Gene.name %in% genes[genes$gs_name %in% pathways,]$gene_symbol,]
   
   pdf(file = paste(wd, "/images/volcano-select-pathways/", f, ".pdf", sep=""), width = 16, height = 16)
   
-  
-  keyvals.color <- ifelse(
-    csv_file$Gene.name %in% genes[genes$gs_name %in% pathways[1],]$gene_symbol, "red",
-    ifelse(csv_file$Gene.name %in% genes[genes$gs_name %in% pathways[2],]$gene_symbol, "blue",
-           ifelse(csv_file$Gene.name %in% genes[genes$gs_name %in% pathways[3],]$gene_symbol, "green","grey70")))
-  
-  names(keyvals.color)[keyvals.color == "grey70"] <- 'Other'
-  names(keyvals.color)[keyvals.color == "red"] <- 'GOBP APOPTOTIC SIGNALING PATHWAY'
-  names(keyvals.color)[keyvals.color == "blue"] <- 'GOBP LIPID METABOLIC PROCESS'
-  names(keyvals.color)[keyvals.color == "green"] <- 'GOBP INFLAMMATORY RESPONSE'
   
   
   
@@ -55,9 +49,7 @@ for (f in folders){
                           legendLabSize = 12,
                           labSize = 4,
                           drawConnectors = TRUE,
-                          max.overlaps = 50,
-                          colCustom = keyvals.color)
-  
+                          max.overlaps = 50)
   
   print(plot)
   dev.off()
