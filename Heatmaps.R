@@ -71,5 +71,6 @@ m$mean <- abs(m$mean)
 m <-m[order(m$mean, decreasing = TRUE),]
 rownames(m) <- m$Gene.name
 
-Heatmap(as.matrix(m[1:50,2:8]))
+Heatmap(m[1:50,2:8],  name = "log2FoldChange", #title of legend
+        column_title = "Conditions", row_title = "Genes")
 
